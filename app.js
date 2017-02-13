@@ -30,13 +30,19 @@ app.get('/new', function(req, res) {
 app.get('/new/:url(*)',function(req,res) {
     // var local = req.hostname;
     var local = req.headers.host;
-    if (checkUrl(req.params.url)){
-        Url.find({url: req.params.url}, function(err, urlData) {
+    var inputUrl = req.params.url;
+    
+    if (checkUrl(inputUrl)){
+        if(inputUrl.slice(0,4) !== 'http') {
+            inputUrl = 'http://' + inputUrl;
+        }
+        Url.find({url: inputUrl}, function(err, urlData) {
             if(err) {
                 console.log(err);
             } else {
                 if(urlData.length === 0) {
-                    var urlObj = {url: req.params.url, short: shortid.generate()};
+
+                    var urlObj = {url: inputUrl, short: shortid.generate()};
                     Url.create(urlObj, function(err, newUrl) {
                         if(err) {
                             console.log(err);
